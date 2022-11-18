@@ -1,0 +1,16 @@
+[package]
+name = "cyrla"
+version = "0.1.0"
+description = "Library for two-way conversion between latin and cyrillic script"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/panther99/cyrla"
+homepage = "https://github.com/panther99/cyrla"
+keywords = ["serbian", "latin", "cyrillic"]
+authors = ["Nikola Stojaković <nikola.stojakovic@hotmail.com>"]
+categories = ["text-processing"]
+edition = "2021"
+
+[dependencies]
+trie-rs = "0.1.1"
+lazy_static = "1.4.0"
