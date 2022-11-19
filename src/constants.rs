@@ -195,7 +195,7 @@ pub const IJEKAVIAN_PREFIXES: [&'static str; 50] = [
     "nenavidj",
     "nigdje",
     "ovdje",
-    "odjelj",
+    "odjel",
     "odjev",
     "odjeć",
     "ondje",

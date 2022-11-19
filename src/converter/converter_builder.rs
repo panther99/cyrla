@@ -1,4 +1,4 @@
-use super::{Converter, ConverterBuilder};
+use super::{Converter, ConverterBuilder, ConverterConfig};
 use crate::constants::{IJEKAVIAN_PREFIXES, LITERAL_PREFIXES};
 
 impl<'a> ConverterBuilder<'a> {
@@ -50,6 +50,11 @@ impl<'a> ConverterBuilder<'a> {
             }
         }
 
-        Converter::new(&self.dictionary)
+        let config = ConverterConfig {
+            dj_conversion_enabled: self.dj_conversion_enabled,
+            dz_conversion_enabled: self.dz_conversion_enabled,
+        };
+
+        Converter::new(&self.dictionary, config)
     }
 }

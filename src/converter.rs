@@ -3,8 +3,14 @@ use trie_rs::Trie;
 pub mod converter;
 pub mod converter_builder;
 
+pub struct ConverterConfig {
+    dj_conversion_enabled: bool,
+    dz_conversion_enabled: bool,
+}
+
 pub struct Converter {
     dictionary: Trie<u8>,
+    config: ConverterConfig,
 }
 
 pub struct ConverterBuilder<'a> {

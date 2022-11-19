@@ -4,7 +4,7 @@ use std::str;
 use lazy_static::lazy_static;
 use trie_rs::{Trie, TrieBuilder};
 
-use super::Converter;
+use super::{Converter, ConverterConfig};
 use crate::constants::{CYRILLIC_LAT, LAT_CYRILLIC};
 
 lazy_static! {
@@ -51,7 +51,7 @@ fn get_matching_results<'a>(results: &'a Vec<Vec<u8>>, lowercase_word: &'a str) 
 }
 
 impl Converter {
-    pub fn new(words: &Vec<&str>) -> Converter {
+    pub fn new(words: &Vec<&str>, config: ConverterConfig) -> Converter {
         let mut trie_builder = TrieBuilder::new();
 
         for word in words {
@@ -60,6 +60,7 @@ impl Converter {
 
         Converter {
             dictionary: trie_builder.build(),
+            config,
         }
     }
 
@@ -162,67 +163,38 @@ impl Converter {
                 },
                 'l' => match next_char {
                     Some(&'j') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('љ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
-                            converted.push('љ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        converted.push_str("лј");
-                        current_position += 1;
+                        converted.push('љ');
+                        current_position += 2;
+                        continue;
                     }
                     _ => converted.push('л'),
                 },
                 'L' => match next_char {
                     Some(&'j') | Some(&'J') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('Љ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
-                            converted.push('Љ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        converted.push('Л');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
-                        current_position += 1;
+                        converted.push('Љ');
+                        current_position += 2;
+                        continue;
                     }
                     _ => converted.push('Л'),
                 },
                 'd' => match next_char {
                     Some(&'j') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
+                        if self.config.dj_conversion_enabled {
+                            let results = search_prefix(&self.dictionary, current_word_segment);
 
-                        if results.is_empty() {
-                            converted.push('ђ');
-                            current_position += 2;
-                            continue;
-                        }
+                            if results.is_empty() {
+                                converted.push('ђ');
+                                current_position += 2;
+                                continue;
+                            }
 
-                        let matching_results = get_matching_results(&results, lowercase_word);
+                            let matching_results = get_matching_results(&results, lowercase_word);
 
-                        if matching_results.is_empty() {
-                            converted.push('ђ');
-                            current_position += 2;
-                            continue;
+                            if matching_results.is_empty() {
+                                converted.push('ђ');
+                                current_position += 2;
+                                continue;
+                            }
                         }
 
                         converted.push_str("дј");
@@ -252,20 +224,22 @@ impl Converter {
                 },
                 'D' => match next_char {
                     Some(&'j') | Some(&'J') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
+                        if self.config.dj_conversion_enabled {
+                            let results = search_prefix(&self.dictionary, current_word_segment);
 
-                        if results.is_empty() {
-                            converted.push('Ђ');
-                            current_position += 2;
-                            continue;
-                        }
+                            if results.is_empty() {
+                                converted.push('Ђ');
+                                current_position += 2;
+                                continue;
+                            }
 
-                        let matching_results = get_matching_results(&results, lowercase_word);
+                            let matching_results = get_matching_results(&results, lowercase_word);
 
-                        if matching_results.is_empty() {
-                            converted.push('Ђ');
-                            current_position += 2;
-                            continue;
+                            if matching_results.is_empty() {
+                                converted.push('Ђ');
+                                current_position += 2;
+                                continue;
+                            }
                         }
 
                         converted.push('Д');
@@ -287,6 +261,29 @@ impl Converter {
                             converted.push('Џ');
                             current_position += 2;
                             continue;
+                        }
+
+                        converted.push('Д');
+                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        current_position += 1;
+                    }
+                    Some (&'z') | Some(&'Z') => {
+                        if self.config.dz_conversion_enabled {
+                            let results = search_prefix(&self.dictionary, current_word_segment);
+
+                            if results.is_empty() {
+                                converted.push('Џ');
+                                current_position += 2;
+                                continue;
+                            }
+
+                            let matching_results = get_matching_results(&results, lowercase_word);
+
+                            if matching_results.is_empty() {
+                                converted.push('Џ');
+                                current_position += 2;
+                                continue;
+                            }
                         }
 
                         converted.push('Д');

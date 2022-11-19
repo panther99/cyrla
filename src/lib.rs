@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_properly_convert_literal_prefixes() {
+    fn it_properly_converts_literal_prefixes() {
         let converter = ConverterBuilder::new().build();
         let cyrillic_text = converter
             .lat_to_cyr("Konjugacija u genetici je sparivanje homolognih hromozoma u mejozi.");
@@ -79,7 +79,7 @@ mod tests {
     }
 
     #[test]
-    fn it_should_properly_convert_words_added_to_dictionary() {
+    fn it_properly_converts_words_added_to_dictionary() {
         let mut builder = ConverterBuilder::new();
         let mut words = vec!["kunjar", "abanjar", "sanjar"];
         let converter = builder.extend_dictionary(&mut words).build();
@@ -93,12 +93,22 @@ mod tests {
     }
 
     #[test]
-    fn it_should_disable_ijekavian_inclusion() {
+    fn it_disables_ijekavian_inclusion() {
         let mut builder = ConverterBuilder::new();
         let converter = builder.disable_ijekavian_inclusion().build();
 
         let cyrillic_text = converter.lat_to_cyr("Nensi, gdje su djeca?");
 
         assert_eq!("Ненси, гђе су ђеца?", cyrillic_text);
+    }
+
+    #[test]
+    fn it_disables_dj_conversion() {
+        let mut builder = ConverterBuilder::new();
+        let converter = builder.disable_dj_conversion().build();
+
+        let cyrillic_text = converter.lat_to_cyr("Djor dji ja");
+
+        assert_eq!("Дјор дји ја", cyrillic_text);
     }
 }
