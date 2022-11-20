@@ -116,17 +116,7 @@ impl Converter {
             match &c {
                 'n' => match next_char {
                     Some(&'j') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('њ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
+                        if !self.is_prefix_in_dictionary(current_word_segment, lowercase_word) {
                             converted.push('њ');
                             current_position += 2;
                             continue;
@@ -139,17 +129,7 @@ impl Converter {
                 },
                 'N' => match next_char {
                     Some(&'j') | Some(&'J') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('Њ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
+                        if !self.is_prefix_in_dictionary(current_word_segment, lowercase_word) {
                             converted.push('Њ');
                             current_position += 2;
                             continue;
@@ -179,39 +159,20 @@ impl Converter {
                 },
                 'd' => match next_char {
                     Some(&'j') => {
-                        if self.config.dj_conversion_enabled {
-                            let results = search_prefix(&self.dictionary, current_word_segment);
-
-                            if results.is_empty() {
-                                converted.push('ђ');
-                                current_position += 2;
-                                continue;
-                            }
-
-                            let matching_results = get_matching_results(&results, lowercase_word);
-
-                            if matching_results.is_empty() {
-                                converted.push('ђ');
-                                current_position += 2;
-                                continue;
-                            }
-                        }
-
-                        converted.push_str("дј");
-                        current_position += 1;
-                    }
-                    Some(&'ž') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('џ');
+                        if self.config.dj_conversion_enabled
+                            && !self.is_prefix_in_dictionary(current_word_segment, lowercase_word)
+                        {
+                            converted.push('ђ');
                             current_position += 2;
                             continue;
                         }
 
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
+                        converted.push('д');
+                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        current_position += 1;
+                    }
+                    Some(&'ž') => {
+                        if !self.is_prefix_in_dictionary(current_word_segment, lowercase_word) {
                             converted.push('џ');
                             current_position += 2;
                             continue;
@@ -224,22 +185,12 @@ impl Converter {
                 },
                 'D' => match next_char {
                     Some(&'j') | Some(&'J') => {
-                        if self.config.dj_conversion_enabled {
-                            let results = search_prefix(&self.dictionary, current_word_segment);
-
-                            if results.is_empty() {
-                                converted.push('Ђ');
-                                current_position += 2;
-                                continue;
-                            }
-
-                            let matching_results = get_matching_results(&results, lowercase_word);
-
-                            if matching_results.is_empty() {
-                                converted.push('Ђ');
-                                current_position += 2;
-                                continue;
-                            }
+                        if self.config.dj_conversion_enabled
+                            && !self.is_prefix_in_dictionary(current_word_segment, lowercase_word)
+                        {
+                            converted.push('Ђ');
+                            current_position += 2;
+                            continue;
                         }
 
                         converted.push('Д');
@@ -247,17 +198,7 @@ impl Converter {
                         current_position += 1;
                     }
                     Some(&'ž') | Some(&'Ž') => {
-                        let results = search_prefix(&self.dictionary, current_word_segment);
-
-                        if results.is_empty() {
-                            converted.push('Џ');
-                            current_position += 2;
-                            continue;
-                        }
-
-                        let matching_results = get_matching_results(&results, lowercase_word);
-
-                        if matching_results.is_empty() {
+                        if !self.is_prefix_in_dictionary(current_word_segment, lowercase_word) {
                             converted.push('Џ');
                             current_position += 2;
                             continue;
@@ -267,23 +208,13 @@ impl Converter {
                         converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
-                    Some (&'z') | Some(&'Z') => {
-                        if self.config.dz_conversion_enabled {
-                            let results = search_prefix(&self.dictionary, current_word_segment);
-
-                            if results.is_empty() {
-                                converted.push('Џ');
-                                current_position += 2;
-                                continue;
-                            }
-
-                            let matching_results = get_matching_results(&results, lowercase_word);
-
-                            if matching_results.is_empty() {
-                                converted.push('Џ');
-                                current_position += 2;
-                                continue;
-                            }
+                    Some(&'z') | Some(&'Z') => {
+                        if self.config.dz_conversion_enabled
+                            && !self.is_prefix_in_dictionary(current_word_segment, lowercase_word)
+                        {
+                            converted.push('Џ');
+                            current_position += 2;
+                            continue;
                         }
 
                         converted.push('Д');
@@ -302,5 +233,21 @@ impl Converter {
         }
 
         converted
+    }
+
+    fn is_prefix_in_dictionary(&self, prefix: &str, lowercase_word: &str) -> bool {
+        let results = search_prefix(&self.dictionary, prefix);
+
+        if results.is_empty() {
+            return false;
+        }
+
+        let matching_results = get_matching_results(&results, lowercase_word);
+
+        if matching_results.is_empty() {
+            return false;
+        }
+
+        true
     }
 }
