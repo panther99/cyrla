@@ -181,6 +181,16 @@ impl Converter {
                         converted.push_str("дж");
                         current_position += 1;
                     }
+                    Some(&'z') => {
+                        if self.config.dz_conversion_enabled {
+                            converted.push('џ');
+                            current_position += 2;
+                            continue;
+                        }
+
+                        converted.push_str("dz");
+                        current_position += 1;
+                    }
                     _ => converted.push('д'),
                 },
                 'D' => match next_char {
