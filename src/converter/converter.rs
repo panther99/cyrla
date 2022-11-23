@@ -1,16 +1,6 @@
-use std::collections::HashMap;
 use std::str;
-
-use lazy_static::lazy_static;
 use trie_rs::{Trie, TrieBuilder};
-
 use super::{Converter, ConverterConfig};
-use crate::constants::{CYRILLIC_LAT, LAT_CYRILLIC};
-
-lazy_static! {
-    static ref LAT_CYR_MAP: HashMap<char, char> = HashMap::from(LAT_CYRILLIC);
-    static ref CYR_LAT_MAP: HashMap<char, &'static str> = HashMap::from(CYRILLIC_LAT);
-}
 
 trait CharSlice {
     fn char_slice(&self, begin: usize, end: usize) -> &Self;
@@ -33,6 +23,132 @@ impl CharSlice for str {
         }
 
         unsafe { self.get_unchecked(begin_byte..end_byte) }
+    }
+}
+
+fn lat_letter_to_cyr(letter: char) -> Option<char> {
+    match letter {
+        'A' => Some('А'),
+        'B' => Some('Б'),
+        'V' => Some('В'),
+        'G' => Some('Г'),
+        'D' => Some('Д'),
+        'Đ' => Some('Ђ'),
+        'E' => Some('Е'),
+        'Ž' => Some('Ж'),
+        'Z' => Some('З'),
+        'I' => Some('И'),
+        'J' => Some('Ј'),
+        'K' => Some('К'),
+        'L' => Some('Л'),
+        'M' => Some('М'),
+        'N' => Some('Н'),
+        'O' => Some('О'),
+        'P' => Some('П'),
+        'R' => Some('Р'),
+        'S' => Some('С'),
+        'T' => Some('Т'),
+        'Ć' => Some('Ћ'),
+        'U' => Some('У'),
+        'F' => Some('Ф'),
+        'H' => Some('Х'),
+        'C' => Some('Ц'),
+        'Č' => Some('Ч'),
+        'Š' => Some('Ш'),
+        'a' => Some('а'),
+        'b' => Some('б'),
+        'v' => Some('в'),
+        'g' => Some('г'),
+        'd' => Some('д'),
+        'đ' => Some('ђ'),
+        'e' => Some('е'),
+        'ž' => Some('ж'),
+        'z' => Some('з'),
+        'i' => Some('и'),
+        'j' => Some('ј'),
+        'k' => Some('к'),
+        'l' => Some('л'),
+        'm' => Some('м'),
+        'n' => Some('н'),
+        'o' => Some('о'),
+        'p' => Some('п'),
+        'r' => Some('р'),
+        's' => Some('с'),
+        't' => Some('т'),
+        'ć' => Some('ћ'),
+        'u' => Some('у'),
+        'f' => Some('ф'),
+        'h' => Some('х'),
+        'c' => Some('ц'),
+        'č' => Some('ч'),
+        'š' => Some('ш'),
+        _   => None,
+    }
+}
+
+fn cyr_letter_to_lat(letter: char) -> Option<&'static str> {
+    match letter {
+        'А' => Some("A"),
+        'Б' => Some("B"),
+        'В' => Some("V"),
+        'Г' => Some("G"),
+        'Д' => Some("D"),
+        'Ђ' => Some("Đ"),
+        'Е' => Some("E"),
+        'Ж' => Some("Ž"),
+        'З' => Some("Z"),
+        'И' => Some("I"),
+        'Ј' => Some("J"),
+        'К' => Some("K"),
+        'Л' => Some("L"),
+        'Љ' => Some("Lj"),
+        'М' => Some("M"),
+        'Н' => Some("N"),
+        'Њ' => Some("Nj"),
+        'О' => Some("O"),
+        'П' => Some("P"),
+        'Р' => Some("R"),
+        'С' => Some("S"),
+        'Т' => Some("T"),
+        'Ћ' => Some("Ć"),
+        'У' => Some("U"),
+        'Ф' => Some("F"),
+        'Х' => Some("H"),
+        'Ц' => Some("C"),
+        'Ч' => Some("Č"),
+        'Џ' => Some("Dž"),
+        'Ш' => Some("Š"),
+        'а' => Some("a"),
+        'б' => Some("b"),
+        'в' => Some("v"),
+        'г' => Some("g"),
+        'д' => Some("d"),
+        'ђ' => Some("đ"),
+        'е' => Some("e"),
+        'ж' => Some("ž"),
+        'з' => Some("z"),
+        'и' => Some("i"),
+        'ј' => Some("j"),
+        'к' => Some("k"),
+        'л' => Some("l"),
+        'љ' => Some("lj"),
+        'м' => Some("m"),
+        'н' => Some("n"),
+        'њ' => Some("nj"),
+        'о' => Some("o"),
+        'п' => Some("p"),
+        'р' => Some("r"),
+        'с' => Some("s"),
+        'т' => Some("t"),
+        'ћ' => Some("ć"),
+        'у' => Some("u"),
+        'ф' => Some("f"),
+        'х' => Some("h"),
+        'ц' => Some("c"),
+        'ч' => Some("č"),
+        'џ' => Some("dž"),
+        'ш' => Some("š"),
+        _   => None, 
     }
 }
 
@@ -69,8 +185,8 @@ impl Converter {
         let mut iter = input.chars().peekable();
 
         while let Some(&c) = iter.peek() {
-            match CYR_LAT_MAP.get(&c) {
-                Some(&letter) => {
+            match cyr_letter_to_lat(c) {
+                Some(letter) => {
                     converted.push_str(letter);
                 }
                 None => {
@@ -136,7 +252,7 @@ impl Converter {
                         }
 
                         converted.push('Н');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        converted.push(lat_letter_to_cyr(*next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
                     _ => converted.push('Н'),
@@ -168,7 +284,7 @@ impl Converter {
                         }
 
                         converted.push('д');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        converted.push(lat_letter_to_cyr(*next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
                     Some(&'ž') => {
@@ -204,7 +320,7 @@ impl Converter {
                         }
 
                         converted.push('Д');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        converted.push(lat_letter_to_cyr(*next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
                     Some(&'ž') | Some(&'Ž') => {
@@ -215,7 +331,7 @@ impl Converter {
                         }
 
                         converted.push('Д');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        converted.push(lat_letter_to_cyr(*next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
                     Some(&'z') | Some(&'Z') => {
@@ -228,13 +344,13 @@ impl Converter {
                         }
 
                         converted.push('Д');
-                        converted.push(*LAT_CYR_MAP.get(next_char.unwrap()).unwrap());
+                        converted.push(lat_letter_to_cyr(*next_char.unwrap()).unwrap());
                         current_position += 1;
                     }
                     _ => converted.push('Д'),
                 },
-                _ => match LAT_CYR_MAP.get(c) {
-                    Some(&letter) => converted.push(letter),
+                _ => match lat_letter_to_cyr(*c) {
+                    Some(letter) => converted.push(letter),
                     None => converted.push(*c),
                 },
             }
