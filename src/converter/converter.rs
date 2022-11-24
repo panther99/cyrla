@@ -156,7 +156,7 @@ fn search_prefix(trie: &Trie<u8>, prefix: &str) -> Vec<Vec<u8>> {
     trie.predictive_search(prefix)
 }
 
-fn get_matching_results<'a>(results: &'a [Vec<u8>], lowercase_word: &'a str) -> Vec<&str> {
+fn get_matching_results<'a>(results: &'a [Vec<u8>], lowercase_word: &'a str) -> Vec<&'a str> {
     unsafe {
         results
             .iter()
