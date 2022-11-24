@@ -7,7 +7,7 @@ trait CharSlice {
 }
 
 impl CharSlice for str {
-    fn char_slice<'a>(&'a self, begin: usize, end: usize) -> &'a str {
+    fn char_slice(&self, begin: usize, end: usize) -> &str {
         let mut begin_byte = self.len();
         let mut end_byte = self.len();
 
@@ -156,7 +156,7 @@ fn search_prefix(trie: &Trie<u8>, prefix: &str) -> Vec<Vec<u8>> {
     trie.predictive_search(prefix)
 }
 
-fn get_matching_results<'a>(results: &'a Vec<Vec<u8>>, lowercase_word: &'a str) -> Vec<&str> {
+fn get_matching_results<'a>(results: &'a [Vec<u8>], lowercase_word: &'a str) -> Vec<&str> {
     unsafe {
         results
             .iter()
@@ -202,7 +202,7 @@ impl Converter {
 
     pub fn lat_to_cyr(&self, input: &str) -> String {
         let mut converted = String::new();
-        let words: Vec<&str> = input.split(" ").into_iter().collect();
+        let words: Vec<&str> = input.split(' ').into_iter().collect();
 
         for (i, word) in words.iter().enumerate() {
             converted.push_str(&self.lat_to_cyr_word(word));

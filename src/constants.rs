@@ -55,7 +55,7 @@ pub const LAT_CYRILLIC: [(char, char); 54] = [
     ('š', 'ш'),
 ];
 
-pub const CYRILLIC_LAT: [(char, &'static str); 60] = [
+pub const CYRILLIC_LAT: [(char, &str); 60] = [
     ('А', "A"),
     ('Б', "B"),
     ('В', "V"),
@@ -118,7 +118,7 @@ pub const CYRILLIC_LAT: [(char, &'static str); 60] = [
     ('ш', "š"),
 ];
 
-pub const LITERAL_PREFIXES: [&'static str; 44] = [
+pub const LITERAL_PREFIXES: [&str; 44] = [
     "anjon",
     "adjektiv",
     "adjunkt",
@@ -165,7 +165,7 @@ pub const LITERAL_PREFIXES: [&'static str; 44] = [
     "tanjug",
 ];
 
-pub const IJEKAVIAN_PREFIXES: [&'static str; 50] = [
+pub const IJEKAVIAN_PREFIXES: [&str; 50] = [
     "podjel",
     "hljeb",
     "djevo",
