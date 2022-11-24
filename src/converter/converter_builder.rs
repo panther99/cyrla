@@ -1,6 +1,12 @@
 use super::{Converter, ConverterBuilder, ConverterConfig};
 use crate::constants::{IJEKAVIAN_PREFIXES, LITERAL_PREFIXES};
 
+impl<'a> Default for ConverterBuilder<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> ConverterBuilder<'a> {
     pub fn new() -> ConverterBuilder<'a> {
         ConverterBuilder {
