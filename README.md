@@ -16,7 +16,8 @@ cyrla = "0.1"
 ```rust
 use cyrla::ConverterBuilder;
 
-let converter = ConverterBuilder::new().build();
+let mut builder = ConverterBuilder::new();
+let converter = builder.build();
 
 // conversion from latin to cyrillic script
 let cyrillic_text = converter.lat_to_cyr("Konjugacija u genetici je sparivanje homolognih hromozoma u mejozi.");
