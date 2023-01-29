@@ -11,6 +11,7 @@ impl<'a> ConverterBuilder<'a> {
     pub fn new() -> ConverterBuilder<'a> {
         ConverterBuilder {
             dictionary: Vec::from(LITERAL_PREFIXES),
+            ignored_latin_words: vec![],
             dj_conversion_enabled: false,
             dz_conversion_enabled: false,
             ijekavian_inclusion_enabled: false,
@@ -20,6 +21,12 @@ impl<'a> ConverterBuilder<'a> {
     /// Adds given prefixes to the dictionary which will be used by the `Converter`
     pub fn extend_dictionary(&mut self, prefixes: &mut Vec<&'a str>) -> &mut ConverterBuilder<'a> {
         self.dictionary.append(prefixes);
+        self
+    }
+
+    /// Adds words which will be skipped during conversion process when converting from latin to cyrillic script
+    pub fn add_ignored_latin_words(&mut self, words: &mut Vec<&'a str>) -> &mut ConverterBuilder<'a> {
+        self.ignored_latin_words.append(words);
         self
     }
 
@@ -59,6 +66,7 @@ impl<'a> ConverterBuilder<'a> {
         let config = ConverterConfig {
             dj_conversion_enabled: self.dj_conversion_enabled,
             dz_conversion_enabled: self.dz_conversion_enabled,
+            ignored_latin_words: &self.ignored_latin_words,
         };
 
         Converter::new(&self.dictionary, config)

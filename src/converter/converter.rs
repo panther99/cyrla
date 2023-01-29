@@ -166,17 +166,23 @@ fn get_matching_results<'a>(results: &'a [Vec<u8>], lowercase_word: &'a str) -> 
     }
 }
 
-impl Converter {
-    pub fn new(words: &Vec<&str>, config: ConverterConfig) -> Converter {
+impl<'a> Converter<'a> {
+    pub fn new(words: &Vec<&str>, config: ConverterConfig<'a>) -> Converter<'a> {
         let mut trie_builder = TrieBuilder::new();
+        let mut ignored_latin_trie_builder = TrieBuilder::new();
 
         for word in words {
             trie_builder.push(word);
         }
 
+        for ignored_word in config.ignored_latin_words {
+            ignored_latin_trie_builder.push(ignored_word);
+        }
+
         Converter {
             dictionary: trie_builder.build(),
             config,
+            ignored_latin_words: ignored_latin_trie_builder.build(),
         }
     }
 
@@ -205,7 +211,11 @@ impl Converter {
         let words: Vec<&str> = input.split(' ').into_iter().collect();
 
         for (i, word) in words.iter().enumerate() {
-            converted.push_str(&self.lat_to_cyr_word(word));
+            if self.ignored_latin_words.exact_match(word) {
+                converted.push_str(word);
+            } else {
+                converted.push_str(&self.lat_to_cyr_word(word));
+            }
 
             if i != words.len() - 1 {
                 converted.push(' ');

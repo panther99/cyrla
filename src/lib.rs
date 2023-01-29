@@ -14,7 +14,8 @@
 //! ```rust
 //! use cyrla::ConverterBuilder;
 //!
-//! let converter = ConverterBuilder::new().build();
+//! let mut builder = ConverterBuilder::new();
+//! let converter = builder.build();
 //!
 //! // conversion from latin to cyrillic script
 //! let cyrillic_text = converter.lat_to_cyr("Konjugacija u genetici je sparivanje homolognih hromozoma u mejozi.");
@@ -54,9 +55,9 @@ mod tests {
 
     #[test]
     fn it_properly_converts_latin_to_cyrillic() {
-        let converter = ConverterBuilder::new().build();
+        let mut builder = ConverterBuilder::new();
         let cyrillic_text =
-            converter.lat_to_cyr("'Oće centrala da pogreši jednom, ali ne sto puta!");
+            builder.build().lat_to_cyr("'Oće centrala da pogreši jednom, ali ne sto puta!");
 
         assert_eq!(
             "'Оће централа да погреши једном, али не сто пута!",
@@ -66,16 +67,17 @@ mod tests {
 
     #[test]
     fn it_properly_converts_cyrillic_to_latin() {
-        let converter = ConverterBuilder::new().build();
-        let latin_text = converter.cyr_to_lat("Ђурђевак је њена омиљена биљка.");
+        let mut builder = ConverterBuilder::new();
+        let latin_text = builder.build().cyr_to_lat("Ђурђевак је њена омиљена биљка.");
 
         assert_eq!("Đurđevak je njena omiljena biljka.", latin_text);
     }
 
     #[test]
     fn it_properly_converts_literal_prefixes() {
-        let converter = ConverterBuilder::new().build();
-        let cyrillic_text = converter
+        let mut builder = ConverterBuilder::new();
+        let cyrillic_text = builder
+            .build()
             .lat_to_cyr("Konjugacija u genetici je sparivanje homolognih hromozoma u mejozi.");
 
         assert_eq!(
@@ -122,5 +124,18 @@ mod tests {
         let cyrillic_text = converter.lat_to_cyr("Dzezvu za kafu sam uzela za Djurdjevdan");
 
         assert_eq!("Џезву за кафу сам узела за Ђурђевдан", cyrillic_text);
+    }
+
+    #[test]
+    fn it_does_not_convert_ignored_latin_words() {
+        let mut builder = ConverterBuilder::new();
+        let mut ignored_words = vec!["C#", "C++", "R", "Python"];
+        let converter = builder
+            .add_ignored_latin_words(&mut ignored_words)
+            .build();
+
+        let cyrillic_text = converter.lat_to_cyr("Jezici koji se koriste na projektu su C# , C++ , R i Python");
+
+        assert_eq!("Језици који се користе на пројекту су C# , C++ , R и Python", cyrillic_text);
     }
 }
