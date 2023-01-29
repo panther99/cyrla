@@ -66,7 +66,7 @@ impl<'a> ConverterBuilder<'a> {
         let config = ConverterConfig {
             dj_conversion_enabled: self.dj_conversion_enabled,
             dz_conversion_enabled: self.dz_conversion_enabled,
-            ignored_latin_words: &self.ignored_latin_words,
+            ignored_latin_words: if self.ignored_latin_words.is_empty() { None } else { Some(&self.ignored_latin_words) },
         };
 
         Converter::new(&self.dictionary, config)

@@ -175,14 +175,16 @@ impl<'a> Converter<'a> {
             trie_builder.push(word);
         }
 
-        for ignored_word in config.ignored_latin_words {
-            ignored_latin_trie_builder.push(ignored_word);
+        if let Some(ignored_words) = config.ignored_latin_words {
+            for ignored_word in ignored_words {
+                ignored_latin_trie_builder.push(ignored_word);
+            }
         }
 
         Converter {
             dictionary: trie_builder.build(),
+            ignored_latin_words: if config.ignored_latin_words.is_some() { Some(ignored_latin_trie_builder.build()) } else { None },
             config,
-            ignored_latin_words: ignored_latin_trie_builder.build(),
         }
     }
 
@@ -206,19 +208,31 @@ impl<'a> Converter<'a> {
         converted
     }
 
+    /// Converts passed input from latin to cyrillic script. If there are ignored latin words
+    /// defined in the builder it will do the search for each word before converting it.
     pub fn lat_to_cyr(&self, input: &str) -> String {
         let mut converted = String::new();
         let words: Vec<&str> = input.split(' ').into_iter().collect();
 
-        for (i, word) in words.iter().enumerate() {
-            if self.ignored_latin_words.exact_match(word) {
-                converted.push_str(word);
-            } else {
-                converted.push_str(&self.lat_to_cyr_word(word));
-            }
+        if let Some(ignored_words) = &self.ignored_latin_words {
+            for (i, word) in words.iter().enumerate() {
+                if ignored_words.exact_match(word) {
+                    converted.push_str(word);
+                } else {
+                    converted.push_str(&self.lat_to_cyr_word(word));
+                }
 
-            if i != words.len() - 1 {
-                converted.push(' ');
+                if i != words.len() - 1 {
+                    converted.push(' ');
+                }
+            }
+        } else {
+            for (i, word) in words.iter().enumerate() {
+                converted.push_str(&self.lat_to_cyr_word(word));
+
+                if i != words.len() - 1 {
+                    converted.push(' ');
+                }
             }
         }
 

@@ -6,12 +6,12 @@ mod converter_builder;
 pub struct ConverterConfig<'a> {
     dj_conversion_enabled: bool,
     dz_conversion_enabled: bool,
-    ignored_latin_words: &'a Vec<&'a str>,
+    ignored_latin_words: Option<&'a Vec<&'a str>>,
 }
 
 pub struct Converter<'a> {
     dictionary: Trie<u8>,
-    ignored_latin_words: Trie<u8>,
+    ignored_latin_words: Option<Trie<u8>>,
     config: ConverterConfig<'a>,
 }
 
