@@ -1,7 +1,7 @@
 use trie_rs::Trie;
 
 mod converter;
-pub mod converter_builder;
+mod converter_builder;
 
 pub struct ConverterConfig {
     dj_conversion_enabled: bool,
