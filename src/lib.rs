@@ -28,6 +28,7 @@
 //! let mut builder = ConverterBuilder::new();
 //! let mut prefixes = vec!["kunjar", "abanjar", "sanjar"];
 //! let converter = builder
+//!     .enable_ijekavian_inclusion()
 //!     .extend_dictionary(&mut prefixes)
 //!     .build();
 //!
@@ -82,33 +83,39 @@ mod tests {
     fn it_properly_converts_words_added_to_dictionary() {
         let mut builder = ConverterBuilder::new();
         let mut words = vec!["kunjar", "abanjar", "sanjar"];
-        let converter = builder.extend_dictionary(&mut words).build();
+        let converter = builder
+            .extend_dictionary(&mut words)
+            .enable_ijekavian_inclusion()
+            .build();
         let cyrillic_text =
-            converter.lat_to_cyr("Abanjar, Kunjar i Sanjar su sudjelovali u zadatku.");
+            converter.lat_to_cyr("Abanjar, Kunjar i Sanjar su sudelovali u zadatku.");
 
         assert_eq!(
-            "Абанјар, Кунјар и Санјар су судјеловали у задатку.",
+            "Абанјар, Кунјар и Санјар су суделовали у задатку.",
             cyrillic_text
         );
     }
 
     #[test]
-    fn it_disables_ijekavian_inclusion() {
+    fn it_properly_converts_ijekavian_words() {
         let mut builder = ConverterBuilder::new();
-        let converter = builder.disable_ijekavian_inclusion().build();
+        let converter = builder
+            .enable_ijekavian_inclusion()
+            .build();
 
-        let cyrillic_text = converter.lat_to_cyr("Nensi, gdje su djeca?");
+        let cyrillic_text =
+            converter.lat_to_cyr("Preko noći proljeće nam dođe, pored Une uz vrbike lazi, bijele trešnje, blistavi đerdani");
 
-        assert_eq!("Ненси, гђе су ђеца?", cyrillic_text);
+        assert_eq!("Преко ноћи прољеће нам дође, поред Уне уз врбике лази, бијеле трешње, блистави ђердани", cyrillic_text);
     }
 
     #[test]
-    fn it_disables_dj_conversion() {
+    fn it_properly_converts_bald_latin() {
         let mut builder = ConverterBuilder::new();
-        let converter = builder.disable_dj_conversion().build();
+        let converter = builder.enable_bald_latin().build();
 
-        let cyrillic_text = converter.lat_to_cyr("Djor dji ja");
+        let cyrillic_text = converter.lat_to_cyr("Dzezvu za kafu sam uzela za Djurdjevdan");
 
-        assert_eq!("Дјор дји ја", cyrillic_text);
+        assert_eq!("Џезву за кафу сам узела за Ђурђевдан", cyrillic_text);
     }
 }

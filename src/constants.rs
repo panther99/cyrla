@@ -45,7 +45,7 @@ pub const LITERAL_PREFIXES: [&str; 44] = [
     "tanjug",
 ];
 
-pub const IJEKAVIAN_PREFIXES: [&str; 50] = [
+pub const IJEKAVIAN_PREFIXES: [&str; 51] = [
     "podjel",
     "hljeb",
     "djevo",
@@ -96,4 +96,5 @@ pub const IJEKAVIAN_PREFIXES: [&str; 50] = [
     "uštedjeli",
     "gdje",
     "djelov",
+    "prolj",
 ];

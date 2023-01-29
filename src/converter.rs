@@ -1,6 +1,6 @@
 use trie_rs::Trie;
 
-pub mod converter;
+mod converter;
 pub mod converter_builder;
 
 pub struct ConverterConfig {
