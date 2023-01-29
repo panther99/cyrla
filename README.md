@@ -39,8 +39,8 @@ let converter = builder
     .extend_dictionary(&mut prefixes)
     .build();
 
-let cyrillic_text = converter.lat_to_cyr("Kunjar, Abanjar i Sanjar sudjelovali su u zadatku.");
-assert_eq!(cyrillic_text, "Кунјар, Абанјар и Санјар судјеловали су у задатку.");
+let cyrillic_text = converter.lat_to_cyr("Kunjar, Abanjar i Sanjar sudelovali su u zadatku.");
+assert_eq!(cyrillic_text, "Кунјар, Абанјар и Санјар суделовали су у задатку.");
 ```
 
 You can find all available options in the `ConverterBuilder` documentation.
