@@ -10,6 +10,9 @@ keywords = ["serbian", "latin", "cyrillic"]
 authors = ["Nikola Stojaković <nikola.stojakovic@hotmail.com>"]
 categories = ["text-processing"]
 edition = "2021"
+exclude = [
+    ".github/*"
+]
 
 [dependencies]
 trie-rs = "0.1.1"
