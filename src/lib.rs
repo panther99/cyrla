@@ -2,7 +2,12 @@
 //!
 //! # Getting started
 //!
-//! Not available for public use yet - this is a development preview.
+//! To use cyrla, add following to your `Cargo.toml` file:
+//! 
+//! ```toml
+//! [dependencies]
+//! cyrla = "0.1"
+//! ```
 //!
 //! ## Usage
 //!
